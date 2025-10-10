@@ -1,13 +1,13 @@
 SHELL := /bin/bash
 
-GATEWAY_SETUP_CERT := gateway_setup_cert.sh
-GATEWAY_SETUP_HOMEPAGE := gateway_setup_user_homepage_location.sh
-INDEX_GENERATE := index_generate.sh
-INDEX_DEPLOY := index_deploy.sh
-USER_SETUP_SKEL := user_setup_skel.sh
-MOTD_SCRIPT := motd.sh
-POSTFIX_SETUP := postfix.sh
-CRON_CERTBOT_SCRIPT := cron_certbot.sh
+GATEWAY_SETUP_CERT := scripts/gateway_setup_cert.sh
+GATEWAY_SETUP_HOMEPAGE := scripts/gateway_setup_user_homepage_location.sh
+INDEX_GENERATE := scripts/index_generate.sh
+INDEX_DEPLOY := scripts/index_deploy.sh
+USER_SETUP_SKEL := scripts/user_setup_skel.sh
+MOTD_SCRIPT := scripts/motd.sh
+POSTFIX_SETUP := scripts/postfix.sh
+CRON_CERTBOT_SCRIPT := scripts/cron_certbot.sh
 
 all: gateway index user motd email cron
 

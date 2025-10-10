@@ -11,5 +11,7 @@ chmod 700 /home/$NEW_USER/.ssh
 chmod 600 /home/$NEW_USER/.ssh/authorized_keys
 
 # generate index.html
-export index_users=`ls ../users | tr -s '' | awk '{printf("<a href=\"https://sandflow.club/~%s\">~%s</a>\n", $1, $1)}'`
-envsubst < index.html.tmpl > ../index.html
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+export index_users=`ls "$ROOT_DIR/users" | tr -s '' | awk '{printf("<a href=\"https://sandflow.club/~%s\">~%s</a>\n", $1, $1)}'`
+envsubst < "$SCRIPT_DIR/index.html.tmpl" > "$ROOT_DIR/index.html"
