@@ -8,6 +8,7 @@ USER_SETUP_SKEL := scripts/user_setup_skel.sh
 MOTD_SCRIPT := scripts/motd.sh
 POSTFIX_SETUP := scripts/postfix.sh
 CRON_CERTBOT_SCRIPT := scripts/cron_certbot.sh
+CLEAN_SCRIPT := scripts/clean.sh
 
 all: gateway index user motd email cron
 
@@ -31,4 +32,7 @@ email:
 cron:
 	$(SHELL) $(CRON_CERTBOT_SCRIPT)
 
-.PHONY: all gateway index user motd email cron
+clean:
+	$(SHELL) $(CLEAN_SCRIPT)
+
+.PHONY: all gateway index user motd email cron clean

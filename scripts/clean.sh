@@ -4,5 +4,6 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
-# Deploy all files from dist directory to web root
-cp -r "$ROOT_DIR/dist/"* /var/www/html/
+# Clean the dist directory
+rm -rf "$ROOT_DIR/dist"
+echo "Cleaned dist directory"
