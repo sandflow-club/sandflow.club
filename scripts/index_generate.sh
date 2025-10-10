@@ -4,7 +4,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
-export index_users=`ls "$ROOT_DIR/users" | tr -s '' | awk '{printf("<a href=\"https://sandflow.club/~%s\">~%s</a>\n", $1, $1)}'`
+export index_users=`ls "$ROOT_DIR/users" | tr -s '' | awk -v domain="$DOMAIN" '{printf("<a href=\"https://%s/~%s\">~%s</a>\n", domain, $1, $1)}'`
 export readme=$(cat "$ROOT_DIR/README")
 
 # Create dist directory if it doesn't exist

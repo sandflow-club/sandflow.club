@@ -1,5 +1,9 @@
 SHELL := /bin/bash
 
+# Load configuration
+include config.env
+export
+
 GATEWAY_SETUP_CERT := scripts/gateway_setup_cert.sh
 GATEWAY_SETUP_HOMEPAGE := scripts/gateway_setup_user_homepage_location.sh
 INDEX_GENERATE := scripts/index_generate.sh
