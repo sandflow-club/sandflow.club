@@ -5,6 +5,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
+# Source configuration
+source "$ROOT_DIR/config.env"
+
 CONFIG_DIR="$ROOT_DIR/share/config/dovecot"
 DOVECOT_BASE="/etc/dovecot"
 
@@ -25,9 +28,17 @@ if [ -f "$DOVECOT_BASE/dovecot.conf" ]; then
     echo "Backed up existing dovecot config to $BACKUP_DIR"
 fi
 
-# Deploy dovecot configuration
-sudo cp "$CONFIG_DIR/dovecot.conf" "$DOVECOT_BASE/dovecot.conf"
-sudo cp "$CONFIG_DIR/conf.d/"*.conf "$DOVECOT_BASE/conf.d/"
+# Deploy dovecot configuration with variable substitution
+sed -e "s/__DOMAIN__/${DOMAIN}/g" \
+    -e "s/__MAIL_CERT_NAME__/${MAIL_CERT_NAME}/g" \
+    "$CONFIG_DIR/dovecot.conf" | sudo tee "$DOVECOT_BASE/dovecot.conf" > /dev/null
+
+for conf in "$CONFIG_DIR/conf.d/"*.conf; do
+    fname=$(basename "$conf")
+    sed -e "s/__DOMAIN__/${DOMAIN}/g" \
+        -e "s/__MAIL_CERT_NAME__/${MAIL_CERT_NAME}/g" \
+        "$conf" | sudo tee "$DOVECOT_BASE/conf.d/$fname" > /dev/null
+done
 
 # Ensure correct permissions
 sudo chown -R root:root "$DOVECOT_BASE"

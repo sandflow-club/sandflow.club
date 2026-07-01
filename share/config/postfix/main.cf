@@ -22,8 +22,8 @@ readme_directory = no
 compatibility_level = 2
 
 # TLS parameters
-smtpd_tls_cert_file=/etc/letsencrypt/live/smtp.sandflow.club/fullchain.pem
-smtpd_tls_key_file=/etc/letsencrypt/live/smtp.sandflow.club/privkey.pem
+smtpd_tls_cert_file=/etc/letsencrypt/live/__MAIL_CERT_NAME__/fullchain.pem
+smtpd_tls_key_file=/etc/letsencrypt/live/__MAIL_CERT_NAME__/privkey.pem
 smtpd_tls_security_level=may
 smtpd_tls_received_header=yes
 smtpd_tls_loglevel=1
@@ -55,11 +55,11 @@ smtpd_milters = inet:localhost:8891
 non_smtpd_milters = inet:localhost:8891
 
 # General host information
-myhostname = sandflow.club
+myhostname = __DOMAIN__
 myorigin = /etc/mailname
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-mydestination = $myhostname, sandflow.club, localhost.localdomain, localhost
+mydestination = $myhostname, __DOMAIN__, localhost.localdomain, localhost
 relayhost =
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 mailbox_size_limit = 0

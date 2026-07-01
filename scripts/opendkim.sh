@@ -5,9 +5,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
+# Source configuration
+source "$ROOT_DIR/config.env"
+
 CONFIG_SRC="$ROOT_DIR/share/config/opendkim/opendkim.conf"
 CONFIG_DST="/etc/opendkim.conf"
-KEY_DIR="/etc/opendkim/keys/smtp.sandflow.club"
+KEY_DIR="/etc/opendkim/keys/${MAIL_CERT_NAME}"
 KEY_FILE="$KEY_DIR/selector1.private"
 
 if [ ! -f "$CONFIG_SRC" ]; then
@@ -26,8 +29,10 @@ if [ -f "$CONFIG_DST" ]; then
     echo "Backed up existing opendkim.conf"
 fi
 
-# Deploy configuration
-sudo cp "$CONFIG_SRC" "$CONFIG_DST"
+# Deploy configuration with variable substitution
+sed -e "s/__DOMAIN__/${DOMAIN}/g" \
+    -e "s/__MAIL_CERT_NAME__/${MAIL_CERT_NAME}/g" \
+    "$CONFIG_SRC" | sudo tee "$CONFIG_DST" > /dev/null
 sudo chown opendkim:opendkim "$CONFIG_DST"
 sudo chmod 640 "$CONFIG_DST"
 echo "OpenDKIM config deployed"
@@ -37,7 +42,7 @@ if [ ! -f "$KEY_FILE" ]; then
     echo ""
     echo "=== No DKIM key found. Generating new key pair... ==="
     sudo mkdir -p "$KEY_DIR"
-    sudo opendkim-genkey -D "$KEY_DIR" -d smtp.sandflow.club -s selector1
+    sudo opendkim-genkey -D "$KEY_DIR" -d "$MAIL_CERT_NAME" -s selector1
     sudo chown -R opendkim:opendkim /etc/opendkim/keys
 
     echo ""
