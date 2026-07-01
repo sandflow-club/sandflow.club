@@ -12,6 +12,7 @@ INDEX_DEPLOY := scripts/index_deploy.sh
 USER_SETUP_SKEL := scripts/user_setup_skel.sh
 USER_ADD := scripts/user_add.sh
 MOTD_SCRIPT := scripts/motd.sh
+DOVECOT_SETUP := scripts/dovecot.sh
 POSTFIX_SETUP := scripts/postfix.sh
 CRON_CERTBOT_SCRIPT := scripts/cron_certbot.sh
 CLEAN_SCRIPT := scripts/clean.sh
@@ -22,10 +23,11 @@ help: ## Show this help message
 	@echo ""
 	@echo "Initial server setup (run in order):"
 	@echo "  setup-gateway   - Install nginx, certbot, configure TLS & user homepages"
-	@echo "  setup-index     - Generate and deploy the main index page"
-	@echo "  setup-users     - Install skel template for new users"
 	@echo "  setup-motd      - Install dynamic MOTD"
-	@echo "  setup-email     - Install and configure Postfix"
+	@echo "  setup-dovecot   - Install and configure Dovecot (IMAP/POP3/SASL)"
+	@echo "  setup-email     - Install and configure Postfix (depends on Dovecot SASL)"
+	@echo "  setup-users     - Install skel template for new users"
+	@echo "  setup-index     - Generate and deploy the main index page"
 	@echo "  setup-cron      - Schedule certbot auto-renewal"
 	@echo ""
 	@echo "User management:"
@@ -37,7 +39,8 @@ help: ## Show this help message
 	@echo "  clean           - Remove dist/ directory"
 
 # ─── Full Setup ─────────────────────────────────────────────────
-all: setup-gateway setup-index setup-users setup-motd setup-email setup-cron
+#   gateway → motd → dovecot → email → users → index → cron
+all: setup-gateway setup-motd setup-dovecot setup-email setup-users setup-index setup-cron
 
 # ─── Gateway ────────────────────────────────────────────────────
 setup-gateway:
@@ -68,6 +71,10 @@ add-user:
 setup-motd:
 	$(SHELL) $(MOTD_SCRIPT)
 
+# ─── Dovecot ────────────────────────────────────────────────────
+setup-dovecot:
+	$(SHELL) $(DOVECOT_SETUP)
+
 # ─── Email ──────────────────────────────────────────────────────
 setup-email:
 	$(SHELL) $(POSTFIX_SETUP)
@@ -82,5 +89,5 @@ clean:
 
 .PHONY: all help \
         setup-gateway setup-index generate-index deploy-index \
-        setup-users add-user setup-motd setup-email setup-cron \
+        setup-users add-user setup-motd setup-dovecot setup-email setup-cron \
         clean
