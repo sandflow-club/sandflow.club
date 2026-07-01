@@ -1,0 +1,12 @@
+# Local configuration (contains domain-specific values)
+config.env
+
+# Build output
+dist/
+
+# Editor / OS
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

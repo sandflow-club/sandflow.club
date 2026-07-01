@@ -24,6 +24,10 @@ sudo snap install --classic certbot
 
 sudo ln -sf /snap/bin/certbot /usr/bin/certbot
 
-sudo certbot --nginx -d "$DOMAIN" -d "www.$DOMAIN" --cert-name "$DOMAIN"
+sudo certbot --nginx \
+    --non-interactive --agree-tos \
+    --email "$CERTBOT_EMAIL" \
+    -d "$DOMAIN" -d "www.$DOMAIN" \
+    --cert-name "$DOMAIN"
 
 sudo nginx -s reload
