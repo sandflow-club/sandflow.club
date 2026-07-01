@@ -16,7 +16,7 @@ fi
 # Non-interactive install
 export DEBIAN_FRONTEND=noninteractive
 sudo apt update
-sudo apt install -y dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd
+sudo apt install -y dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd dovecot-sieve dovecot-managesieved
 
 # Backup existing config if present
 if [ -f "$DOVECOT_BASE/dovecot.conf" ]; then
