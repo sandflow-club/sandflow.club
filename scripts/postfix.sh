@@ -7,6 +7,7 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
 # Source configuration
 source "$ROOT_DIR/config.env"
+MAIL_CERT_NAME="smtp.${DOMAIN}"
 
 CONFIG_SRC="$ROOT_DIR/share/config/postfix/main.cf"
 CONFIG_DST="/etc/postfix/main.cf"
