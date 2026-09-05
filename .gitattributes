@@ -1,0 +1,16 @@
+# Keep repository text deterministic across Windows, WSL, and Linux containers.
+* text=auto eol=lf
+
+# Binary assets must never receive line-ending conversion.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.zip binary
+*.gz binary
+*.zst binary
