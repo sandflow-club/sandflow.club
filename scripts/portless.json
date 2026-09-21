@@ -1,0 +1,9 @@
+{
+  "web": {
+    "name": "sandflow",
+    "command": [
+      "node",
+      "scripts/dev-web.mjs"
+    ]
+  }
+}

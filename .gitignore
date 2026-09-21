@@ -3,6 +3,7 @@ config.env
 
 # Build output
 dist/
+node_modules/
 
 # Editor / OS
 *.swp

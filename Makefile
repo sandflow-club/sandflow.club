@@ -1,7 +1,11 @@
 SHELL := /bin/bash
 
-# Load configuration
+# Web development works without server configuration. Keep it required for setup.
+ifeq ($(strip $(filter-out help dev dev-raw dev-trust test-dev,$(MAKECMDGOALS))),)
+-include config.env
+else
 include config.env
+endif
 export
 
 # Script paths
@@ -22,6 +26,13 @@ CLEAN_SCRIPT := scripts/clean.sh
 help: ## Show this help message
 	@echo "Usage: make [target]"
 	@echo ""
+	@echo "Local web development (Node.js 24+, no server setup required):"
+	@echo "  dev            - Open https://sandflow.localhost through Portless"
+	@echo "  dev-raw        - Serve directly at http://127.0.0.1:5173"
+	@echo "  dev-trust      - Synchronize Portless certificate trust"
+	@echo "  test-dev       - Run web development server tests"
+	@echo "  Guide: docs/development.md"
+	@echo ""
 	@echo "Initial server setup (run in order):"
 	@echo "  setup-gateway   - Install nginx, certbot, configure TLS & user homepages"
 	@echo "  setup-motd      - Install dynamic MOTD"
@@ -39,6 +50,19 @@ help: ## Show this help message
 	@echo "  generate-index  - Regenerate index.html to dist/"
 	@echo "  deploy-index    - Deploy dist/ to web root"
 	@echo "  clean           - Remove dist/ directory"
+
+# ─── Local Web Development ─────────────────────────────────────
+dev:
+	node scripts/portless.mjs web
+
+dev-raw:
+	node scripts/dev-web.mjs
+
+dev-trust:
+	node scripts/portless.mjs trust
+
+test-dev:
+	node --test scripts/dev-web.test.mjs
 
 # ─── Full Setup ─────────────────────────────────────────────────
 #   gateway → motd → dovecot → opendkim → email → users → index → cron
@@ -93,7 +117,7 @@ setup-cron:
 clean:
 	$(SHELL) $(CLEAN_SCRIPT)
 
-.PHONY: all help \
+.PHONY: all help dev dev-raw dev-trust test-dev \
         setup-gateway setup-index generate-index deploy-index \
         setup-users add-user setup-motd setup-dovecot setup-opendkim setup-email setup-cron \
         clean
