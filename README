@@ -1,8 +1,7 @@
 $ Quickstart
 $
 $ 1. Clone repository
-$ git clone https://github.com/[github_id]/sandflow.club.git   # for GitHub
-$ git clone git@git.sr.ht:~gzj/sandflow.club                   # for SourceHut
+$ git clone https://github.com/[github_id]/sandflow.club.git
 $ cd sandflow.club
 $
 $ 2. Generate key pair
@@ -15,8 +14,7 @@ $ git add users/[username]/authorized_keys
 $ git commit -m 'Add user [username]'
 $
 $ 4. Push the commit to the repository
-$ git push                                                      # for GitHub
-$ git send-email --to="~gzj/sandflow.club@lists.sr.ht" HEAD^  # for SourceHut
+$ git push
 $
 $ 5. After the commit is merged, you can log into sandflow.club with the private key
 $ ssh -i ~/.ssh/id_rsa_sandflow [username]@sandflow.club

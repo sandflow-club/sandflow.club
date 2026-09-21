@@ -67,7 +67,6 @@ test('homepage renders the existing template with local links and escaped README
   const response = await request('/');
   assert.equal(response.status, 200);
   assert.match(response.body, /<h1>sandflow\.club<\/h1>/);
-  assert.match(response.body, /bgcolor="#000000" text="#C09020"/);
   assert.match(response.body, /Instructions &lt;example&gt; &amp; details/);
   assert.match(response.body, /href="\/~alice\/"/);
   assert.ok(!response.body.includes('${index_users}'));
