@@ -29,7 +29,31 @@ if (args[0] === '--check') {
   process.exit(0);
 }
 
+// Windows npm/npx are .cmd shims. Invoke their JavaScript entrypoints with
+// Node directly, preserving argument boundaries without cmd.exe/PowerShell.
+function nativeCommand(program, argv) {
+  if (process.platform !== 'win32' || !/^(npm|npx)(\.cmd)?$/i.test(program)) return [program, argv];
+  const name = program.toLowerCase().startsWith('npx') ? 'npx' : 'npm';
+  const cli = `${name}-cli.js`;
+  const candidates = [];
+  if (env.npm_execpath) candidates.push(resolve(dirname(env.npm_execpath), cli));
+  for (const directory of (env.PATH ?? '').split(delimiter)) {
+    if (directory) candidates.push(resolve(directory.replace(/^"|"$/g, ''), 'node_modules/npm/bin', cli));
+  }
+  candidates.push(resolve(dirname(process.execPath), 'node_modules/npm/bin', cli));
+  const entry = candidates.find(candidate => existsSync(candidate));
+  if (!entry) throw new Error(`Cannot locate ${cli}; install Node.js with npm or set npm_execpath.`);
+  return [process.execPath, [entry, ...argv]];
+}
+
+function stopWindowsTree(child) {
+  if (child.exitCode !== null || !child.pid) return;
+  const result = spawnSync('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' });
+  if (result.error) throw result.error;
+}
+
 function sync(command, argv, capture = false) {
+  [command, argv] = nativeCommand(command, argv);
   const result = spawnSync(command, argv, { cwd: root, env, stdio: capture ? ['inherit', 'pipe', 'inherit'] : 'inherit', encoding: 'utf8' });
   if (result.error) throw result.error;
   if (result.status !== 0) process.exit(result.status ?? 1);
@@ -38,6 +62,7 @@ function sync(command, argv, capture = false) {
 
 function run(command, argv, options = {}) {
   const { forwardSignals = true, onExit, ...spawnOptions } = options;
+  [command, argv] = nativeCommand(command, argv);
   const child = spawn(command, argv, { cwd, env, stdio: 'inherit', ...spawnOptions });
   let stopping = false;
   const stop = signal => {
@@ -46,10 +71,12 @@ function run(command, argv, options = {}) {
     if (!forwardSignals) return; // Portless already signals the entire app process tree.
     if (options.detached && process.platform !== 'win32') {
       try { process.kill(-child.pid, signal); } catch {}
-    } else child.kill(signal);
+    } else if (process.platform === 'win32') stopWindowsTree(child);
+    else child.kill(signal);
   };
   process.on('SIGINT', () => stop('SIGINT'));
   process.on('SIGTERM', () => stop('SIGTERM'));
+  if (process.platform === 'win32') process.on('SIGBREAK', () => stop('SIGTERM'));
   child.on('error', error => { console.error(error.message); process.exitCode = 1; });
   child.on('exit', (code, signal) => {
     let status = code ?? (signal === 'SIGINT' ? 130 : 143);
@@ -121,7 +148,8 @@ if (!trustOnly && env.PORTLESS === '0') {
         // Compose may need longer than Portless's ten-second shutdown window.
         // A rejected name/startup must never stop another already-running stack.
         if (existsSync(env.PORTLESS_STARTED_FILE)) {
-          const result = spawnSync(profile.cleanup[0], profile.cleanup.slice(1), { cwd, env, stdio: 'inherit' });
+          const [cleanupCommand, cleanupArgs] = nativeCommand(profile.cleanup[0], profile.cleanup.slice(1));
+          const result = spawnSync(cleanupCommand, cleanupArgs, { cwd, env, stdio: 'inherit' });
           if (result.error || result.status !== 0) throw new Error('Development stack cleanup failed; run the documented stop command.');
         }
       } finally { rmSync(cleanupDir, { recursive: true, force: true }); }
