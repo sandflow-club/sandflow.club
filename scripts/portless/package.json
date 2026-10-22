@@ -2,6 +2,6 @@
   "name": "local-development-proxy",
   "private": true,
   "description": "Isolated tooling, independent of application and Docker dependencies",
-  "engines": { "node": ">=24" },
+  "engines": { "node": "^24.22.1 || ^26.12.1" },
   "dependencies": { "portless": "0.15.6" }
 }
