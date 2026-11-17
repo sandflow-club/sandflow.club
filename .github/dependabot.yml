@@ -1,0 +1,22 @@
+# Check active dependency manifests weekly; keep major version updates separate.
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: /scripts/portless
+  schedule:
+    interval: weekly
+    day: monday
+    time: '10:00'
+    timezone: Asia/Shanghai
+  open-pull-requests-limit: 3
+  groups:
+    minor-and-patch:
+      patterns:
+      - '*'
+      update-types:
+      - minor
+      - patch
+    security:
+      applies-to: security-updates
+      patterns:
+      - '*'
